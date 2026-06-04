@@ -1,5 +1,5 @@
 elif meniu == "4. Matching & Rapoarte":
-    st.header("📊 Motor de Matching și Statistici")
+    st.header(" Motor de Matching și Statistici")
     
     df_donatii = pd.read_csv(FISIER_DONATII)
     df_cereri = pd.read_csv(FISIER_CERERI)
@@ -10,7 +10,7 @@ elif meniu == "4. Matching & Rapoarte":
     col2.metric("Total Cereri Lansate", len(df_cereri))
     
     st.markdown("---")
-    st.subheader("🤝 Potriviri Automate (Matching)")
+    st.subheader(" Potriviri Automate (Matching)")
     st.info("Sistemul compară tabelele CSV pentru a găsi cereri și oferte din aceeași categorie.")
     
     # Algoritm de matching folosind Pandas Merge în loc de SQL JOIN
@@ -36,7 +36,7 @@ elif meniu == "4. Matching & Rapoarte":
             # Export Listă Distribuție
             csv = tabel_afisare.to_csv(index=False).encode('utf-8')
             st.download_button(
-                label="📥 Descarcă Lista de Distribuție (CSV)",
+                label=" Descarcă Lista de Distribuție (CSV)",
                 data=csv,
                 file_name='lista_distributie_matching.csv',
                 mime='text/csv',
@@ -47,7 +47,7 @@ elif meniu == "4. Matching & Rapoarte":
         st.write("Nu există suficiente date în fișiere pentru a face matching.")
 
     st.markdown("---")
-    st.subheader("📈 Analiză Categorii (Din fișierul donatii.csv)")
+    st.subheader("Analiză Categorii (Din fișierul donatii.csv)")
     
     if not df_donatii.empty:
         st.bar_chart(df_donatii['categorie'].value_counts())
