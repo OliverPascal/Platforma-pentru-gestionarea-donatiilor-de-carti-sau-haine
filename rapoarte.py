@@ -1,53 +1,71 @@
-elif meniu == "4. Matching & Rapoarte":
-    st.header(" Motor de Matching și Statistici")
-    
-    df_donatii = pd.read_csv(FISIER_DONATII)
-    df_cereri = pd.read_csv(FISIER_CERERI)
-    
-    # Statistici Generale
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Obiecte Donate", len(df_donatii))
-    col2.metric("Total Cereri Lansate", len(df_cereri))
-    
-    st.markdown("---")
-    st.subheader(" Potriviri Automate (Matching)")
-    st.info("Sistemul compară tabelele CSV pentru a găsi cereri și oferte din aceeași categorie.")
-    
-    # Algoritm de matching folosind Pandas Merge în loc de SQL JOIN
-    if not df_cereri.empty and not df_donatii.empty:
-        donatii_disponibile = df_donatii[df_donatii['status'] == 'Disponibil']
-        
-        # Facem un JOIN (merge) intern pe coloana 'categorie'
-        df_matching = pd.merge(
-            df_cereri, 
-            donatii_disponibile, 
-            on='categorie', 
-            how='inner', 
-            suffixes=('_Cerere', '_Oferta')
-        )
-        
-        if not df_matching.empty:
-            # Aranjăm coloanele frumos pentru afișare
-            tabel_afisare = df_matching[['beneficiar', 'descriere_Cerere', 'donator', 'descriere_Oferta', 'categorie']]
-            tabel_afisare.columns = ['ONG / Beneficiar', 'Ce se cere', 'Donator găsit', 'Ce se oferă', 'Categorie']
-            
-            st.dataframe(tabel_afisare, use_container_width=True)
-            
-            # Export Listă Distribuție
-            csv = tabel_afisare.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                label=" Descarcă Lista de Distribuție (CSV)",
-                data=csv,
-                file_name='lista_distributie_matching.csv',
-                mime='text/csv',
-            )
-        else:
-            st.write("Nu s-au găsit potriviri exacte momentan.")
-    else:
-        st.write("Nu există suficiente date în fișiere pentru a face matching.")
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
-    st.markdown("---")
-    st.subheader("Analiză Categorii (Din fișierul donatii.csv)")
+// Inițializăm ecranul LCD. 
+// 0x27 este adresa standard I2C pentru majoritatea ecranelor. 16 coloane, 2 rânduri.
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Definire pini
+const int pinTrig = 9;
+const int pinEcho = 10;
+const int pinLED = 13;
+const int pinBuzzer = 8;
+
+const int limitaDistanta = 20; 
+
+void setup() {
+  // Inițializare LCD
+  lcd.init();
+  lcd.backlight(); // Aprinde lumina de fundal a ecranului
+  
+  // Mesaj de pornire
+  lcd.setCursor(0, 0); // Pune cursorul pe prima coloană, primul rând
+  lcd.print("Sistem Alarma");
+  lcd.setCursor(0, 1); // Mută pe rândul 2
+  lcd.print("Se incarca...");
+  delay(2000); // Așteaptă 2 secunde ca să vedem mesajul
+  lcd.clear(); // Șterge ecranul
+  
+  // Setare pini
+  pinMode(pinTrig, OUTPUT);
+  pinMode(pinEcho, INPUT);
+  pinMode(pinLED, OUTPUT);
+  pinMode(pinBuzzer, OUTPUT);
+}
+
+void loop() {
+  // Măsurare distanță
+  digitalWrite(pinTrig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(pinTrig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(pinTrig, LOW);
+  
+  long durata = pulseIn(pinEcho, HIGH);
+  int distanta = durata * 0.034 / 2;
+  
+  // --- AFIȘARE PE LCD ---
+  lcd.setCursor(0, 0); // Rândul 1
+  lcd.print("Distanta: ");
+  lcd.print(distanta);
+  lcd.print(" cm  "); // Spațiile goale șterg cifrele vechi dacă distanța scade (ex: de la 100 la 9)
+
+  // Verificare limită alarmă
+  if (distanta > 0 && distanta < limitaDistanta) {
+    // Pornire Alarmă
+    digitalWrite(pinLED, HIGH);
+    tone(pinBuzzer, 1000);
     
-    if not df_donatii.empty:
-        st.bar_chart(df_donatii['categorie'].value_counts())
+    lcd.setCursor(0, 1); // Rândul 2
+    lcd.print("STATUS: ALARMA! ");
+  } else {
+    // Oprire Alarmă
+    digitalWrite(pinLED, LOW);
+    noTone(pinBuzzer);
+    
+    lcd.setCursor(0, 1); // Rândul 2
+    lcd.print("STATUS: OK      ");
+  }
+  
+  delay(200); // Pauză scurtă pentru a nu licări ecranul prea rapid
+}
