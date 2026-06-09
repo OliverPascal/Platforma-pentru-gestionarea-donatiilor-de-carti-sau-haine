@@ -6,10 +6,10 @@ import donator
 import ong
 import rapoarte
 
-# Setări generale de pagină (Se pun doar în fișierul principal)
+# Setări generale de pagină 
 st.set_page_config(page_title="Platforma Donatii", layout="wide")
 
-# Inițializăm fișierele de bază CSV (Funcție creată în auth.py de Membrul 1)
+# Inițializăm fișierele de bază CSV 
 auth.init_fisiere()
 
 # Inițializare variabile de sesiune pentru logare
@@ -28,7 +28,7 @@ meniu = st.sidebar.radio("Alege Modulul:",
                           "3. ONG (Cereri)", 
                           "4. Matching & Rapoarte"])
 
-# Apelarea funcțiilor din fișierele colegilor în funcție de selecție
+# Apelarea funcțiilor în funcție de selecție
 if meniu == "1. Profil & Login":
     auth.afiseaza_profil()
 
