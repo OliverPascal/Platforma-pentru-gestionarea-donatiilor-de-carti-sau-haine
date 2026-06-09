@@ -1,10 +1,10 @@
-import streamlit as st #Biblioteca Streamlit este folosita pentru a crea butoane, formulare si tabele direct in Python
-import pandas as pd    #Biblioteca Pandas este esentiala pentru citirea, modificarea si salvarea tabelelor de date
+import streamlit as st # Biblioteca Streamlit este folosita pentru a crea butoane, formulare si tabele direct in Python
+import pandas as pd    # Biblioteca Pandas este esentiala pentru citirea, modificarea si salvarea tabelelor de date
 
-FISIER_CERERI = 'cereri.csv'  #O constanta care retine numele fisierului CSV  unde stocam toate cererile ONG-urilor
+FISIER_CERERI = 'cereri.csv'  # O constanta care retine numele fisierului CSV  unde stocam toate cererile ONG-urilor
 
 def afiseaza_ong():
-    st.header("Catalog si Cereri")
+    st.header("Catalog si Cereri") #Titlul
 
     #Norma de securitate:
     if st.session_state["logat"] and st.session_state["rol"] == "ONG / Beneficiar":
@@ -24,7 +24,7 @@ def afiseaza_ong():
                     'id': noul_id, 'beneficiar': st.session_state["username"], 
                     'categorie': cat_cerere, 'descriere': desc_cerere, 'status': 'In asteptare'
                 }])
-                df_cereri = pd.concat([df_cereri, noua_cerere], ignore_index=True)
+                df_cereri = pd.concat([df_cereri, noua_cerere], ignore_index=True) #Salveaza tabelul actualizat
                 df_cereri.to_csv(FISIER_CERERI, index=False)
                 st.success("Cererea a fost inregistrata!")
 
